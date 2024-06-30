@@ -3,13 +3,15 @@ import userRoutes from './src/routes/userRoute';
 const app: express.Application = express();
 const port: number = 3000;
 import {sequelize} from './src/utils/db';
+import movieRoutes from "./src/routes/movieRoutes";
 
 app.use(express.json());
 
 app.use('/api/users', userRoutes);
+app.use('/api/movies', movieRoutes);
 
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.status(404).send('Not Found');
+    res.status(404).send('Not Found (index.ts)');
 });
 
 sequelize.authenticate().then(async () => {
