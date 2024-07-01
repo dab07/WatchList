@@ -63,12 +63,12 @@ export const getPopularMovies = async (req : express.Request, res : express.Resp
     }
 }
 
-const searchMedia = async (req: express.Request, res: express.Response) => {
+export const getSearchMedia = async (req: express.Request, res: express.Response) => {
     const { query } = req.query;
     if (!query) {
         return res.status(400).json({ message: 'Query parameter is required' });
     }
-
+    console.log(query)
     try {
         const url = `https://api.themoviedb.org/3/search/multi?query=${query}&api_key=${apiKey}`;
         const response = await fetch(url);
@@ -80,7 +80,7 @@ const searchMedia = async (req: express.Request, res: express.Response) => {
     }
 };
 
-const deleteMedia = async (req: express.Request, res: express.Response) => {
+export const deleteMedia = async (req: express.Request, res: express.Response) => {
     const { userId } = req.body;
 
     try {
@@ -92,7 +92,7 @@ const deleteMedia = async (req: express.Request, res: express.Response) => {
     }
 };
 
-const getMediaDetails = async (req: express.Request, res: express.Response) => {
+export const getMediaDetails = async (req: express.Request, res: express.Response) => {
     const { mediaId } = req.query;
 
     if (!mediaId) {
@@ -107,5 +107,25 @@ const getMediaDetails = async (req: express.Request, res: express.Response) => {
     } catch (error) {
         console.error('Get media details error:', error);
         res.status(500).json({ message: 'Unable to get media details' });
+    }
+};
+
+export const updateMedia = async (req: express.Request, res: express.Response) => {
+    const { user_id } = req.params;
+    const restAttribute = req.body;
+
+    try {
+        const media = await Media.findOne({ where: {  user_id: user_id } });
+
+        if (!media) {
+            return res.status(404).json({ message: 'Media entry not found' });
+        }
+
+        await media.update(restAttribute);
+
+        res.status(200).json({ message: 'Media entry updated successfully', media });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred while updating the media entry', error });
     }
 };

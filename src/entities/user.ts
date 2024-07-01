@@ -17,7 +17,6 @@ User.init(
     {
         id: {
             type: DataTypes.UUID,
-            autoIncrement: true,
             primaryKey: true,
         },
         username: {

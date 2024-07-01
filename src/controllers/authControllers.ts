@@ -5,7 +5,7 @@ import Session from "../entities/session";
 import {randomUUID} from "node:crypto";
 
 export const login = async (req: Request, res: Response) => {
-    const { username, password , name} = req.body;
+    const { username, password } = req.body;
     try {
         const user = await User.findOne({ where: { username } });
         if (user && await bcrypt.compare(password, user.password)) {
@@ -21,13 +21,13 @@ export const login = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
     try {
-        const { username, email, password } = req.body;
-        if (username && email && password) {
+        const { username, email, password , name} = req.body;
+        if (username && email && password && name) {
             const hashedPassword = await bcrypt.hash(password, 10);
-            await User.create({ id: randomUUID(),username, email, password: hashedPassword });
+            await User.create({ id: randomUUID(),username, email, password: hashedPassword , name});
             res.status(201).json({ message: "User registered successfully" });
         } else {
-            console.log(username, email, password);
+            console.log(username, email, password, name);
             res.status(400).send("Bad request");
         }
     } catch (error) {
