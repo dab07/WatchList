@@ -1,14 +1,15 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
-import User from "../utils/user";
+import User from "../entities/user";
+import Session from "../entities/session";
 import {randomUUID} from "node:crypto";
 
 export const login = async (req: Request, res: Response) => {
-    const { username, password } = req.body;
+    const { username, password , name} = req.body;
     try {
         const user = await User.findOne({ where: { username } });
         if (user && await bcrypt.compare(password, user.password)) {
-            res.status(200).json({ message: "User logged in successfully", userId: user.id, username: user.username });
+            res.status(200).json({ message: "User logged in successfully", userId: user.id, username: user.username , name : user.name});
         } else {
             res.status(401).json({ message: "Invalid username or password" });
         }

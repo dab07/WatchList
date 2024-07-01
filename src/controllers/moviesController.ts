@@ -1,7 +1,8 @@
 import express from "express";
 import fetch from "node-fetch";
 import qs from "qs";
-
+import User from "../entities/user";
+import Media from "../entities/media";
 
 type Movie = {
     id: number;
@@ -61,3 +62,50 @@ export const getPopularMovies = async (req : express.Request, res : express.Resp
         res.status(400).send("Unable to get top 20 popular movies")
     }
 }
+
+const searchMedia = async (req: express.Request, res: express.Response) => {
+    const { query } = req.query;
+    if (!query) {
+        return res.status(400).json({ message: 'Query parameter is required' });
+    }
+
+    try {
+        const url = `https://api.themoviedb.org/3/search/multi?query=${query}&api_key=${apiKey}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Search media error:', error);
+        res.status(500).json({ message: 'Unable to search media' });
+    }
+};
+
+const deleteMedia = async (req: express.Request, res: express.Response) => {
+    const { userId } = req.body;
+
+    try {
+        await Media.destroy({ where: {user_id: userId } });
+        res.status(200).json({ message: 'Media deleted successfully' });
+    } catch (error) {
+        console.error('Delete media error:', error);
+        res.status(500).json({ message: 'Unable to delete media' });
+    }
+};
+
+const getMediaDetails = async (req: express.Request, res: express.Response) => {
+    const { mediaId } = req.query;
+
+    if (!mediaId) {
+        return res.status(400).json({ message: 'MediaID is required' });
+    }
+
+    try {
+        const url = `https://api.themoviedb.org/3/movie/${mediaId}?api_key=${apiKey}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        res.status(200).json(data);
+    } catch (error) {
+        console.error('Get media details error:', error);
+        res.status(500).json({ message: 'Unable to get media details' });
+    }
+};

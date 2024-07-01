@@ -6,4 +6,6 @@ const router = Router();
 router.get('/', getMovies);
 router.get('/popular', getPopularMovies);
 
+
+
 export default router;

@@ -1,15 +1,16 @@
 import { Model, DataTypes } from 'sequelize';
 import {UUID} from "node:crypto";
-import {sequelize} from './db';
+import {sequelize} from '../utils/db';
 
 class User extends Model {
-    public id!: UUID;
-    public username!: string;
-    public email!: string;
-    public password!: string;
+    id!: UUID;
+    username!: string;
+    email!: string;
+    password!: string;
+    name !: string;
 
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+    readonly createdAt!: Date;
+    readonly updatedAt!: Date;
 }
 
 User.init(
@@ -30,6 +31,10 @@ User.init(
         password: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        name : {
+            type: DataTypes.STRING,
+            allowNull : false,
         }
     },
     {
