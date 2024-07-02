@@ -4,12 +4,15 @@ import User from "../entities/user";
 import Session from "../entities/session";
 import {randomUUID} from "node:crypto";
 
+const sessionExpiryTime = 24 * 3600 * 1000; // 24 hours
 export const login = async (req: Request, res: Response) => {
     const { username, password } = req.body;
     try {
         const user = await User.findOne({ where: { username } });
         if (user && await bcrypt.compare(password, user.password)) {
-            res.status(200).json({ message: "User logged in successfully", userId: user.id, username: user.username , name : user.name});
+            const sessionId = randomUUID();
+            await Session.create<Session>({ id: sessionId, user_id: user.id, expires_at: new Date(Date.now() + sessionExpiryTime) });
+            res.status(200).json({ id: user.id, username: user.username, name: user.name, sessionId: sessionId });
         } else {
             res.status(401).json({ message: "Invalid username or password" });
         }
@@ -22,6 +25,9 @@ export const login = async (req: Request, res: Response) => {
 export const register = async (req: Request, res: Response) => {
     try {
         const { username, email, password , name} = req.body;
+        // check if user already registered
+
+
         if (username && email && password && name) {
             const hashedPassword = await bcrypt.hash(password, 10);
             await User.create({ id: randomUUID(),username, email, password: hashedPassword , name});

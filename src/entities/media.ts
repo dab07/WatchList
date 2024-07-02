@@ -57,6 +57,7 @@ Media.init(
     {
         sequelize,
         tableName: 'media',
+        timestamps: true,
     }
 );
 

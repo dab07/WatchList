@@ -3,8 +3,8 @@ import { sequelize } from '../utils/db';
 
 class Session extends Model {
     id!: string;
-    expiresAt!: Date;
-
+    user_id!: string;
+    expires_at!: Date;
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
 }
@@ -15,11 +15,11 @@ Session.init(
             type: DataTypes.STRING,
             primaryKey: true,
         },
-        userId: {
-            type: DataTypes.STRING, // Assuming userId is UUID
+        user_id: {
+            type: DataTypes.STRING,
             allowNull: false,
         },
-        expiresAt: {
+        expires_at: {
             type: DataTypes.TIME,
             allowNull: false,
         },

@@ -6,4 +6,14 @@ const sequelize = new Sequelize('node_proj', 'root', 'test@1234', {
     port: 3306
 });
 
-export { sequelize };
+const connectDatabase = async () => {
+    try {
+        await sequelize.authenticate()
+        console.log('Connection has been established successfully.');
+        await sequelize.sync(); // Ensure database synchronization without force: true
+    } catch (e) {
+        console.error('Error authenticating the database connection:', e);
+    }
+}
+
+export { connectDatabase, sequelize };

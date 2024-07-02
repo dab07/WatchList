@@ -1,10 +1,12 @@
 import express from 'express';
-// import session from "express-session";
 import userRoutes from './src/routes/userRoute';
 const app: express.Application = express();
 const port: number = 3000;
-import {sequelize} from './src/utils/db';
 import movieRoutes from "./src/routes/movieRoutes";
+import Session from './src/entities/session';
+import User from './src/entities/user';
+import {connectDatabase} from "./src/utils/db";
+import {addAssociations} from "./src/utils/associations";
 
 app.use(express.json());
 // app.use(session({
@@ -16,22 +18,40 @@ app.use(express.json());
 //     }
 // }));
 app.use('/api/users', userRoutes);
-app.use('/api/movies', movieRoutes);
 
-app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-    res.status(404).send('Not Found (index.ts)');
+app.use(async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+        const sessionId = req.headers['x-session-id'] as string;
+        const userId = req.headers['x-user-id'] as string;
+
+        if (!sessionId || !userId) {
+            return res.status(401).send('Unauthorized user: Missing session or user id.');
+        }
+
+        const existingSession = await Session.findOne({
+            where: {
+                id: sessionId,
+                user_id: userId,
+            }
+        });
+
+        if (existingSession) {
+            console.log(`Session(${sessionId}) verified for user: ${userId}`);
+            return next();
+        }
+
+        res.status(401).send('Unauthorized user: Invalid session.');
+    } catch (error) {
+        console.error('Error in session middleware:', error);
+        res.status(500).send('Internal server error.');
+    }
 });
 
-sequelize.authenticate().then(async () => {
-    try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
-})
 
-sequelize.sync().then(() => {
+app.use('/api/movies', movieRoutes);
+
+connectDatabase().then(() => {
+    addAssociations();
     app.listen(port, () => {
         console.log(`Server running at http://localhost:${port}`);
     });
