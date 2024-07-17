@@ -1,5 +1,6 @@
 import {Router} from "express";
 import {
+    addMedia,
     deleteMedia,
     getMediaDetails,
     getMovies,
@@ -13,8 +14,9 @@ router.get('/', getMovies);
 router.get('/popular', getPopularMovies);
 
 router.get('/searchMedia', getSearchMedia);
+router.get('/mediaDetails', getMediaDetails);
+router.post('/addMedia', addMedia);
 router.delete('/deleteMedia', deleteMedia);
-router.get('mediaDetails', getMediaDetails);
 router.put('/updateMedia', updateMedia);
 
 
