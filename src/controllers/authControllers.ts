@@ -4,7 +4,7 @@ import User from "../entities/user";
 import Session from "../entities/session";
 import {randomUUID} from "node:crypto";
 
-const sessionExpiryTime = 24 * 3600 * 1000; // 24 hours
+const sessionExpiryTime = 3600 * 1000; // 1 hour
 export const login = async (req: Request, res: Response) => {
     const { username, password } = req.body;
     try {
@@ -24,10 +24,8 @@ export const login = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
     try {
-        const { username, email, password , name} = req.body;
+        const {username, email, password , name} = req.body;
         // check if user already registered
-
-
         if (username && email && password && name) {
             const hashedPassword = await bcrypt.hash(password, 10);
             await User.create({ id: randomUUID(),username, email, password: hashedPassword , name});
