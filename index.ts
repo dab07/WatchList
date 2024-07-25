@@ -1,5 +1,6 @@
 import express from 'express';
 import userRoutes from './src/routes/userRoute';
+import cors from 'cors';
 const app: express.Application = express();
 const port: number = 3000;
 import movieRoutes from "./src/routes/movieRoutes";
@@ -7,7 +8,7 @@ import Session from './src/entities/session';
 import User from './src/entities/user';
 import {connectDatabase} from "./src/utils/db";
 import {addAssociations} from "./src/utils/associations";
-
+app.use(cors());
 app.use(express.json());
 // app.use(session({
 //     secret: 'your-secret-key', // Replace with a strong secret key
